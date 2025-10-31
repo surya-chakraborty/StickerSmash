@@ -5,7 +5,7 @@ import { useState } from "react";
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
 import * as ImagePicker from 'expo-image-picker'
-import { Assets } from "@react-navigation/elements";
+// import { Assets } from "@react-navigation/elements";
 
 const PlaceHolderImage = require('@/assets/images/background-image.png')
 /*
@@ -48,10 +48,19 @@ Created a common buttton compoent and added default styles and conditionally add
 4. Using an Image Picker - expo-image-picker provides launchImageLibraryAsync() method to display the system UI by choosing an image or a video from the device's media library. We'll use the primary themed button created in the previous chapter to select an image from the device's media library and create a function to launch the device's image library to implement this functionality.
 We will create a function that will invoke the imagepicker and will pass that function as a prop to the primary button component
 Here's example log value of the slected image -  LOG  {"assets": [{"assetId": null, "base64": null, "duration": null, "exif": null, "fileName": "b0b5f809-4f14-4a24-9e1b-050b71b244d9.png", "fileSize": 28407, "height": 2400, "mimeType": "image/png", "rotation": null, "type": "image", "uri": "file:///data/user/0/host.exp.exponent/cache/ImagePicker/b0b5f809-4f14-4a24-9e1b-050b71b244d9.png", "width": 1080}], "canceled": false}
+
+
+5. Create emoji picker model - react native has modal compoent that used to draw attention of the user obver anything else by dispklayying it on top of all the content on the app
+alert() works on the same model principle too that we have already previously used in the button component.
+
+
+
 */
 export default function Index() {
 
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined)
+
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false)
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -62,6 +71,7 @@ export default function Index() {
     if(!result.canceled){
       // console.log(result)
       setSelectedImage(result.assets[0].uri)
+      setShowAppOptions(true)
     }
     else{
       alert("You did not select any image.")
@@ -74,10 +84,15 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceHolderImage} selectedImage={selectedImage}/>
       </View>
-      <View style={styles.footerContainer}>
+      {/* Optionally show the emoji picker buttons */}
+      {showAppOptions ? (
+        <View/> 
+      ) : (
+        <View style={styles.footerContainer}>
         <Button label="Choose a photo" theme="primary" onPress={pickImageAsync}/>
-        <Button label="Use this photo"/>
+        <Button label="Use this photo" onPress={() => setShowAppOptions(true)}/>
       </View>
+      )}
     </View>
   );
 }
