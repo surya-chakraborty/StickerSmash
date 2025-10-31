@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ImageSourcePropType } from "react-native";
 import { useState } from "react";
 // import { Link } from "expo-router";
 // import {Image} from "expo-image"
@@ -6,6 +6,9 @@ import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
 import CircleButton from "@/components/CircleButton";
+import EmojiPicker from "@/components/EmojiPicker";
+import EmojiList from "@/components/EmojiList";
+import EmojiSticker from "@/components/EmojiSticker";
 
 import * as ImagePicker from 'expo-image-picker'
 // import { Assets } from "@react-navigation/elements";
@@ -53,9 +56,9 @@ We will create a function that will invoke the imagepicker and will pass that fu
 Here's example log value of the slected image -  LOG  {"assets": [{"assetId": null, "base64": null, "duration": null, "exif": null, "fileName": "b0b5f809-4f14-4a24-9e1b-050b71b244d9.png", "fileSize": 28407, "height": 2400, "mimeType": "image/png", "rotation": null, "type": "image", "uri": "file:///data/user/0/host.exp.exponent/cache/ImagePicker/b0b5f809-4f14-4a24-9e1b-050b71b244d9.png", "width": 1080}], "canceled": false}
 
 
-5. Create emoji picker model - react native has modal compoent that used to draw attention of the user obver anything else by dispklayying it on top of all the content on the app
+5. Create emoji picker modal - react native has modal compoent that used to draw attention of the user obver anything else by dispklayying it on top of all the content on the app
 alert() works on the same model principle too that we have already previously used in the button component.
-
+First of all craeted a button layout component that renders conditionally afetr image slection with add emoji, refresh and save button
 
 
 */
@@ -64,6 +67,10 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined)
 
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false)
+
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined)
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -86,18 +93,24 @@ export default function Index() {
   }
 
   const onAddSticker = () => {
-    
+    setIsModalVisible(true)
   }
 
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
   const onSaveImageAsync = async () => {
-    
+
   }
+
   return (
     <View
       style={styles.container}
     >
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceHolderImage} selectedImage={selectedImage}/>
+        {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji}></EmojiSticker>}
       </View>
       {/* Optionally show the emoji picker buttons */}
       {showAppOptions ? (
@@ -114,6 +127,9 @@ export default function Index() {
         <Button label="Use this photo" onPress={() => setShowAppOptions(true)}/>
       </View>
       )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
     </View>
   );
 }
