@@ -1,9 +1,11 @@
 import { View, StyleSheet } from "react-native";
+import { useState } from "react";
 // import { Link } from "expo-router";
 // import {Image} from "expo-image"
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
-
+import * as ImagePicker from 'expo-image-picker'
+import { Assets } from "@react-navigation/elements";
 
 const PlaceHolderImage = require('@/assets/images/background-image.png')
 /*
@@ -42,17 +44,38 @@ What is '@' here? - The @ symbol is a custom path alias for importing custom com
 
 ** Creating Button Component - React Native includes a few different components for handling touch events, but <Pressable> is recommended for its flexibility. It can detect single taps, long presses, trigger separate events when the button is pushed in and released, and more.
 Created a common buttton compoent and added default styles and conditionally added styles too for diffrent feel
+
+4. Using an Image Picker - expo-image-picker provides launchImageLibraryAsync() method to display the system UI by choosing an image or a video from the device's media library. We'll use the primary themed button created in the previous chapter to select an image from the device's media library and create a function to launch the device's image library to implement this functionality.
+We will create a function that will invoke the imagepicker and will pass that function as a prop to the primary button component
+Here's example log value of the slected image -  LOG  {"assets": [{"assetId": null, "base64": null, "duration": null, "exif": null, "fileName": "b0b5f809-4f14-4a24-9e1b-050b71b244d9.png", "fileSize": 28407, "height": 2400, "mimeType": "image/png", "rotation": null, "type": "image", "uri": "file:///data/user/0/host.exp.exponent/cache/ImagePicker/b0b5f809-4f14-4a24-9e1b-050b71b244d9.png", "width": 1080}], "canceled": false}
 */
 export default function Index() {
+
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined)
+
+  const pickImageAsync = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1
+    })
+    if(!result.canceled){
+      // console.log(result)
+      setSelectedImage(result.assets[0].uri)
+    }
+    else{
+      alert("You did not select any image.")
+    }
+  }
   return (
     <View
       style={styles.container}
     >
       <View style={styles.imageContainer}>
-        <ImageViewer imgSource={PlaceHolderImage}/>
+        <ImageViewer imgSource={PlaceHolderImage} selectedImage={selectedImage}/>
       </View>
       <View style={styles.footerContainer}>
-        <Button label="Choose a photo" theme="primary"/>
+        <Button label="Choose a photo" theme="primary" onPress={pickImageAsync}/>
         <Button label="Use this photo"/>
       </View>
     </View>
