@@ -14,6 +14,21 @@ Run - npx expo start {--tunnel via ngrok}
 
 2. Expo router - uses file based structure for routing with index.tsx naming as '/' route to the parent folder with individual _layout.tsx for each folder or nested route and a parent _layout.tsx for common tab elements and header element.
 What is Stack ? - A stack navigator is the foundation for navigating between different screens in an app. 
+
+Here the root layout.tsx
+export default function RootLayout() {
+  return (
+  <Stack>
+    <Stack.Screen name="index" options={{title: 'Home'}}/>
+    <Stack.Screen name="about" options={{title: 'About'}}/>
+  </Stack>
+  );
+}
+The title in the root layout,tsx is show on the top ledt @android device
+
+**Not found page - '+not-found.tsx' is the common not found page used in expo react-native projects
+
+
 */
 export default function Index() {
   return (
