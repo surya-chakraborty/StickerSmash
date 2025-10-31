@@ -1,5 +1,11 @@
-import { Text, View, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import { View, StyleSheet } from "react-native";
+// import { Link } from "expo-router";
+// import {Image} from "expo-image"
+import ImageViewer from "@/components/ImageViewer";
+import Button from "@/components/Button";
+
+
+const PlaceHolderImage = require('@/assets/images/background-image.png')
 /*
 This file is the entry point to our app
 Expo - is framework built on top of react native that provides file-based 
@@ -28,17 +34,27 @@ The title in the root layout,tsx is show on the top ledt @android device
 
 **Not found page - '+not-found.tsx' is the common not found page used in expo react-native projects
 
+**Tabs view impleneted with several props and ionicons expo-icon library
 
+3. Creating our first page - The Home page
+Image compoent from expo-router
+What is '@' here? - The @ symbol is a custom path alias for importing custom components and other modules instead of relative paths. Expo CLI automatically configures it in tsconfig.json.
+
+** Creating Button Component - React Native includes a few different components for handling touch events, but <Pressable> is recommended for its flexibility. It can detect single taps, long presses, trigger separate events when the button is pushed in and released, and more.
+Created a common buttton compoent and added default styles and conditionally added styles too for diffrent feel
 */
 export default function Index() {
   return (
     <View
       style={styles.container}
     >
-      <Text style={styles.text}>Hello React Native via expo 👋</Text>
-      <Link href="/about" style={styles.button}>
-      Go to About screen
-      </Link>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceHolderImage}/>
+      </View>
+      <View style={styles.footerContainer}>
+        <Button label="Choose a photo" theme="primary"/>
+        <Button label="Use this photo"/>
+      </View>
     </View>
   );
 }
@@ -47,15 +63,14 @@ const styles = StyleSheet.create({
   container : {
         flex: 1,
         backgroundColor: '#25292e',
-        justifyContent: "center",
+        // justifyContent: "center",
         alignItems: "center",
       },
-  text: {
-    color: '#fff',
+  imageContainer: {
+    flex: 1,
+  }, 
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
   },
-  button: {
-    fontSize: 20,
-    textDecorationLine: 'underline',
-    color: '#fff'
-  }
 })
