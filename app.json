@@ -39,12 +39,6 @@
           }
         }
       ]
-      // [
-      //   "expo-media-library",
-      //   {
-      //     "permissions": ["images"]
-      //   }
-      // ]
     ],
     "experiments": {
       "typedRoutes": true,

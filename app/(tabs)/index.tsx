@@ -72,6 +72,11 @@ then we added a stcker modal and dlatlist with several stciker that after clicki
 
 7. Take screenshot and save it to mobile libarary  - We'll use 'react-native-view-shot' to take a screenshot and 'expo-media-library' to save an image on device's media library.
 installation - npx expo install react-native-view-shot expo-media-library
+** For web platform we iused dom-to-image libary to save it as a screenshot
+
+8. Configure  status bar, splash screen and app icon - app details before deploying our app to an app store, such as theming the status bar, customizing the app icon, and splash screen.
+In the parent layout we just need to  import { StatusBar } from 'expo-status-bar'; and add StatusBar compont with desired style props , afetr the stack within parent react fragments, that will do it all
+for splash screen and app icon, expo already configured it in app.json file we just need to rename our icons same as that and have it in the same path on the asssests/images folder
 
 */
 export default function Index() {
