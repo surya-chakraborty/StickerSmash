@@ -1,5 +1,11 @@
-import { View, StyleSheet, ImageSourcePropType } from "react-native";
-import { useState } from "react";
+import { View, StyleSheet, ImageSourcePropType, Platform } from "react-native";
+import { useEffect, useState, useRef } from "react";
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import domtoimage from 'dom-to-image';
+
+import * as MediaLibrary from 'expo-media-library'
+import { captureRef } from 'react-native-view-shot'
+
 // import { Link } from "expo-router";
 // import {Image} from "expo-image"
 import ImageViewer from "@/components/ImageViewer";
@@ -11,6 +17,7 @@ import EmojiList from "@/components/EmojiList";
 import EmojiSticker from "@/components/EmojiSticker";
 
 import * as ImagePicker from 'expo-image-picker'
+// import { withDecay } from "react-native-reanimated";
 // import { Assets } from "@react-navigation/elements";
 
 const PlaceHolderImage = require('@/assets/images/background-image.png')
@@ -59,7 +66,12 @@ Here's example log value of the slected image -  LOG  {"assets": [{"assetId": nu
 5. Create emoji picker modal - react native has modal compoent that used to draw attention of the user obver anything else by dispklayying it on top of all the content on the app
 alert() works on the same model principle too that we have already previously used in the button component.
 First of all craeted a button layout component that renders conditionally afetr image slection with add emoji, refresh and save button
+then we added a stcker modal and dlatlist with several stciker that after clicking as a n pressable button it adds to the image
 
+6. Add Gestures - now we will use gestures using react-native gestures library (pan and tap) and animate them using reanimated library.
+
+7. Take screenshot and save it to mobile libarary  - We'll use 'react-native-view-shot' to take a screenshot and 'expo-media-library' to save an image on device's media library.
+installation - npx expo install react-native-view-shot expo-media-library
 
 */
 export default function Index() {
@@ -72,6 +84,15 @@ export default function Index() {
 
   const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined)
 
+  const [permissionRequest, requestPermission] = MediaLibrary.usePermissions()
+
+  const ImageRef = useRef<View>(null)
+
+  useEffect(() => {
+    if(!permissionRequest?.granted){
+      requestPermission()
+    }
+  }, [])
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -101,16 +122,49 @@ export default function Index() {
   };
 
   const onSaveImageAsync = async () => {
+    if(Platform.OS !== 'web'){
+      try{
+        const localUri = await captureRef(ImageRef, {
+          height: 440,
+          quality: 1
+        })
 
+        await MediaLibrary.saveToLibraryAsync(localUri)
+        if(localUri){
+          alert('Saved!')
+        }
+      } catch(e){
+        console.log(e)
+      }
+    } else {
+      try{
+        const dataUrl = await domtoimage.toJpeg(ImageRef.current, {
+          quality: 0.95,
+          width: 320,
+          height: 440,
+        })
+
+        let link = document.createElement('a')
+        link.download = 'sticker-smash.jpeg'
+        link.href = dataUrl
+        link.click()
+
+      } catch(e){
+        console.log(e)
+      }
+    }
+    
   }
 
   return (
-    <View
+    <GestureHandlerRootView
       style={styles.container}
     >
       <View style={styles.imageContainer}>
-        <ImageViewer imgSource={PlaceHolderImage} selectedImage={selectedImage}/>
-        {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji}></EmojiSticker>}
+        <View ref={ImageRef} collapsable={false}>
+          <ImageViewer imgSource={PlaceHolderImage} selectedImage={selectedImage}/>
+          {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji}></EmojiSticker>}
+        </View>
       </View>
       {/* Optionally show the emoji picker buttons */}
       {showAppOptions ? (
@@ -130,7 +184,7 @@ export default function Index() {
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
       </EmojiPicker>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
